@@ -8,13 +8,13 @@ import { ReservationsDrawer } from './components/ReservationsDrawer';
 import { SingleHtmlExportModal } from './components/SingleHtmlExportModal';
 import { Toast } from './components/Toast';
 import { Footer } from './components/Footer';
-import { INITIAL_PRODUCTS } from './data/mockProducts';
+import { INITIAL_PRODUCTS, getProductsForNeighborhood } from './data/mockProducts';
 import { CategoryType, Product, Reservation } from './types';
 import { PackageOpen, Sparkles, RefreshCcw } from 'lucide-react';
 
 export default function App() {
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
-  const [currentLocation, setCurrentLocation] = useState<string>('서울시 송파구 방이동');
+  const [currentLocation, setCurrentLocation] = useState<string>('서울시 송파구 잠실동 (현재 위치)');
+  const [products, setProducts] = useState<Product[]>(() => getProductsForNeighborhood('서울시 송파구 잠실동 (현재 위치)'));
   const [currentCategory, setCurrentCategory] = useState<CategoryType>('전체');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortOption, setSortOption] = useState<string>('discount');
@@ -31,6 +31,46 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isHtmlExportOpen, setIsHtmlExportOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const applyLocation = (loc: string, notice?: string) => {
+    setCurrentLocation(loc);
+    const newItems = getProductsForNeighborhood(loc);
+    setProducts(newItems);
+    if (notice) {
+      setToastMessage(notice);
+    }
+  };
+
+  // Geolocation detector function
+  const detectLocation = (showToast = false) => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          let detected = '서울시 송파구 잠실동 (현재 위치)';
+          if (latitude > 37.49 && latitude < 37.53 && longitude > 127.05 && longitude < 127.13) {
+            detected = '서울시 송파구 잠실동 (현재 위치)';
+          } else if (latitude > 37.48 && latitude < 37.52 && longitude > 127.00 && longitude < 127.05) {
+            detected = '서울시 서초구 서초동 (현재 위치)';
+          } else {
+            detected = '서울시 송파구 잠실동 (현재 위치)';
+          }
+          applyLocation(detected, showToast ? `현재 GPS 위치를 감지하여 '${detected}'(으)로 설정되었습니다.` : undefined);
+        },
+        () => {
+          applyLocation('서울시 송파구 방이동', showToast ? '위치 권한을 허용하지 않아 기본 위치인 "서울시 송파구 방이동"으로 설정되었습니다.' : undefined);
+        },
+        { timeout: 5000 }
+      );
+    } else {
+      applyLocation('서울시 송파구 방이동');
+    }
+  };
+
+  // Initial detection on mount
+  React.useEffect(() => {
+    detectLocation(false);
+  }, []);
 
   // Category counts calculation
   const categoryCounts = useMemo(() => {
@@ -155,9 +195,9 @@ export default function App() {
       <Header
         currentLocation={currentLocation}
         onLocationChange={(loc) => {
-          setCurrentLocation(loc);
-          setToastMessage(`탐색 동네가 '${loc}'(으)로 변경되었습니다.`);
+          applyLocation(loc, `탐색 동네가 '${loc}'(으)로 변경되어 해당 지역 마감 상품 목록으로 갱신되었습니다.`);
         }}
+        onDetectGPS={() => detectLocation(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         reservedCount={reservations.length}

@@ -17,6 +17,7 @@ import { NEIGHBORHOODS } from '../data/mockProducts';
 interface HeaderProps {
   currentLocation: string;
   onLocationChange: (loc: string) => void;
+  onDetectGPS: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   reservedCount: number;
@@ -29,6 +30,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   currentLocation,
   onLocationChange,
+  onDetectGPS,
   searchQuery,
   onSearchChange,
   reservedCount,
@@ -38,6 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
   totalRescuedCount,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [customInput, setCustomInput] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -106,46 +109,87 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               </a>
 
-              {/* Location Selector */}
+              {/* Location Selector: GPS Auto-detection + Direct Input */}
               <div className="relative" ref={dropdownRef}>
                 <button
                   type="button"
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center gap-1.5 text-xs md:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 py-1.5 px-3 rounded-full transition-colors cursor-pointer"
-                  title="탐색 동네 변경"
+                  title="동네 설정 (GPS 자동 인식 / 직접 입력)"
                 >
                   <MapPin className="w-3.5 h-3.5 text-[#FF6B35] shrink-0" />
-                  <span className="truncate max-w-[120px] sm:max-w-none">{currentLocation}</span>
+                  <span className="truncate max-w-[140px] sm:max-w-none">{currentLocation}</span>
                   <ChevronDown className="w-3 h-3 text-slate-400 shrink-0" />
                 </button>
 
-                {/* Location Dropdown */}
+                {/* Location Dropdown Popover */}
                 {dropdownOpen && (
-                  <div className="absolute left-0 mt-2 w-52 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-50">
-                    <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                      동네 변경
+                  <div className="absolute left-0 mt-2 w-72 sm:w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
+                      <span className="text-xs font-bold text-slate-800">탐색 동네 설정</span>
+                      <button
+                        type="button"
+                        onClick={onDetectGPS}
+                        className="flex items-center gap-1 text-[11px] font-bold text-[#2EC4B6] hover:text-[#20968B] bg-teal-50 hover:bg-teal-100 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                      >
+                        <MapPin className="w-3 h-3" />
+                        <span>현재 위치로 설정</span>
+                      </button>
                     </div>
-                    {NEIGHBORHOODS.map((loc) => {
-                      const isSelected = loc === currentLocation;
-                      return (
-                        <button
-                          key={loc}
-                          type="button"
-                          onClick={() => {
-                            onLocationChange(loc);
-                            setDropdownOpen(false);
-                          }}
-                          className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between transition-colors cursor-pointer ${
-                            isSelected
-                              ? 'bg-orange-50/80 text-[#FF6B35] font-bold'
-                              : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
-                          }`}
-                        >
-                          <span>{loc}</span>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-[#FF6B35]" />}
-                        </button>
-                      );
-                    })}
+
+                    {/* Direct Text Input Form */}
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        if (customInput.trim()) {
+                          onLocationChange(customInput.trim());
+                          setDropdownOpen(false);
+                          setCustomInput('');
+                        }
+                      }}
+                      className="flex gap-1.5 mb-3"
+                    >
+                      <input
+                        type="text"
+                        value={customInput}
+                        onChange={(e) => setCustomInput(e.target.value)}
+                        placeholder="예: 잠실동, 역삼동, 판교동"
+                        className="flex-1 bg-slate-100 focus:bg-white text-xs px-3 py-2 rounded-xl border border-transparent focus:border-[#2EC4B6] outline-none"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-[#FF6B35] hover:bg-[#E85A25] text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors cursor-pointer shrink-0"
+                      >
+                        변경
+                      </button>
+                    </form>
+
+                    <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1 px-1">
+                      추천 동네 바로가기
+                    </div>
+                    <div className="space-y-0.5">
+                      {NEIGHBORHOODS.map((loc) => {
+                        const isSelected = loc === currentLocation;
+                        return (
+                          <button
+                            key={loc}
+                            type="button"
+                            onClick={() => {
+                              onLocationChange(loc);
+                              setDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-3 py-1.5 text-xs rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
+                              isSelected
+                                ? 'bg-orange-50 text-[#FF6B35] font-bold'
+                                : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                            }`}
+                          >
+                            <span>{loc}</span>
+                            {isSelected && <Check className="w-3.5 h-3.5 text-[#FF6B35]" />}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>
