@@ -1,0 +1,6 @@
+{
+  "name": "Food Rescue",
+  "description": "동네 유통기한 임박 상품 마감 할인 및 푸드 리스크 매칭 플랫폼",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

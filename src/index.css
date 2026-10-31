@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  --color-brand-orange: #FF6B35;
+  --color-brand-orange-hover: #E85A25;
+  --color-brand-green: #2EC4B6;
+  --color-brand-green-dark: #20968B;
+  --color-brand-dark: #0F172A;
+  --color-brand-bg: #F8F9FA;
+}
+
+:root {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+}
+
+/* Custom scrollbar for horizontal categories */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
