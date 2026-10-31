@@ -77,10 +77,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             {/* Quick Hero Banner visual card */}
             <div className="relative rounded-2xl overflow-hidden shadow-xs border border-slate-200/80 aspect-[16/7] hidden sm:block">
               <img
-                src="/src/assets/images/hero_food_rescue_1793446159367.jpg"
+                src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80"
                 alt="Food Rescue 신선 베이커리와 샐러드"
                 className="w-full h-full object-cover"
                 loading="eager"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = 'https://placehold.co/600x400/2EC4B6/ffffff?text=Food+Rescue';
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent flex items-end p-4">
                 <div className="text-white text-xs">

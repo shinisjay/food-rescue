@@ -84,6 +84,10 @@ export const ReservationsDrawer: React.FC<ReservationsDrawerProps> = ({
                         src={item.image}
                         alt={item.productName}
                         className="w-16 h-16 rounded-lg object-cover border border-slate-100 shrink-0"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = 'https://placehold.co/600x400/2EC4B6/ffffff?text=Food+Rescue';
+                        }}
                       />
                       <div className="min-w-0">
                         <div className="flex items-center gap-1 text-[11px] text-slate-500">

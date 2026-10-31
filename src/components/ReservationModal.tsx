@@ -99,6 +99,10 @@ export const ReservationModal: React.FC<ReservationModalProps> = ({
                 src={product.image}
                 alt={product.productName}
                 className="w-20 h-20 rounded-lg object-cover shrink-0 shadow-xs"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = 'https://placehold.co/600x400/2EC4B6/ffffff?text=Food+Rescue';
+                }}
               />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">

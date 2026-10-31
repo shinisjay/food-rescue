@@ -20,20 +20,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onOpenModal }
     >
       {/* Product Image Container */}
       <div className="relative overflow-hidden aspect-[4/3] bg-slate-100">
-        {!imageError ? (
-          <img
-            src={product.image}
-            alt={product.productName}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-orange-50 to-teal-50 text-slate-400 p-4">
-            <Sparkles className="w-8 h-8 text-[#FF6B35] mb-2 opacity-50" />
-            <span className="text-xs font-semibold text-slate-600">{product.productName}</span>
-          </div>
-        )}
+        <img
+          src={product.image}
+          alt={product.productName}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = 'https://placehold.co/600x400/2EC4B6/ffffff?text=Food+Rescue';
+          }}
+        />
 
         {/* Top Badges Overlay */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
